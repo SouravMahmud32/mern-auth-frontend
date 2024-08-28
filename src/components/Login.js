@@ -17,7 +17,7 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        "https://mern-auth-otp-server.vercel.app/api/auth/login",
         { email, password }
       );
       setMessage(response.data.msg);
@@ -35,7 +35,7 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/verify-login-otp",
+        "https://mern-auth-otp-server.vercel.app/api/auth/verify-login-otp",
         { email, otp }
       );
       setMessage(response.data.msg);
@@ -50,7 +50,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
   };
 
   return (

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth'; // Update backend API URL
+const API_URL = 'https://mern-auth-otp-server.vercel.app/api/auth'; // Update backend API URL
 
 export const registerUser = async (userData) => {
   return axios.post(`${API_URL}/register`, userData);
