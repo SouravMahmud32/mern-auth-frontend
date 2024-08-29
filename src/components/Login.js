@@ -49,8 +49,40 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await axios.get(
+        `https://mern-auth-otp-server.vercel.app/api/auth/google-initiate?email=${encodeURIComponent(email)}`
+      );
+      setMessage(response.data.msg);
+      setStep(2); // Move to OTP verification step
+    } catch (error) {
+      setMessage(error.response?.data?.msg || "Failed to initiate Google login");
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleOtpVerify = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await axios.post(
+        "https://mern-auth-otp-server.vercel.app/api/auth/verify-google-otp",
+        { email, otp }
+      );
+      if (response.status === 200) {
+        window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.msg || "Invalid or expired OTP");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,18 +116,18 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          
         </form>
       )}
       <p className=" text-lg">or</p>
-          <button
-            className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
-            onClick={handleGoogleLogin}
-          >
-            Login with Google
-          </button>
+      <button
+        className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
+        onClick={handleGoogleLogin}
+        disabled={loading}
+      >
+        {loading ? "Initiating Google Login..." : "Login with Google"}
+      </button>
       {step === 2 && (
-        <form onSubmit={handleVerifyOtp}>
+        <form onSubmit={handleGoogleOtpVerify}>
           <h2 className="text-xl font-bold text-green-400 mb-3">Enter OTP</h2>
           <input
             className="py-3 px-3 my-2 rounded-lg"
