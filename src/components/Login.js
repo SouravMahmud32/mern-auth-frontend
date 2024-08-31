@@ -49,6 +49,24 @@ const Login = () => {
     }
   };
 
+  
+  const handleGoogleOtpInitiation = async () => {
+    setLoading(true);
+    setMessage("");
+    try {
+        const response = await axios.post(
+            "https://mern-auth-otp-server.vercel.app/api/auth/google/initiate-otp",
+            { email }
+        );
+        setMessage(response.data.msg);
+        setStep(2); // Move to OTP verification step
+    } catch (error) {
+        setMessage(error.response?.data?.msg || "Failed to initiate Google login");
+    } finally {
+        setLoading(false);
+    }
+};
+
   const handleGoogleLogin = () => {
     window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
   };
@@ -90,7 +108,7 @@ const Login = () => {
       <p className=" text-lg">or</p>
           <button
             className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
-            onClick={handleGoogleLogin}
+            onClick={handleGoogleOtpInitiation}
           >
             Login with Google
           </button>
