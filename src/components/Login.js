@@ -4,26 +4,24 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleGoogleInitiateOtp = async () => {
     setLoading(true);
     setMessage("");
     try {
       const response = await axios.post(
-        "https://mern-auth-otp-server.vercel.app/api/auth/login",
-        { email, password }
+        "https://mern-auth-otp-server.vercel.app/api/auth/google/initiate-otp",
+        { email }
       );
       setMessage(response.data.msg);
-      setStep(2);
+      setStep(2); // Move to OTP verification step
     } catch (error) {
-      setMessage(error.response?.data?.msg || "Invalid email or password");
+      setMessage(error.response?.data?.msg || "Failed to initiate Google login");
     } finally {
       setLoading(false);
     }
@@ -35,12 +33,13 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "https://mern-auth-otp-server.vercel.app/api/auth/verify-login-otp",
+        "https://mern-auth-otp-server.vercel.app/api/auth/google/verify-otp",
         { email, otp }
       );
       setMessage(response.data.msg);
       if (response.status === 200) {
-        navigate("/home"); 
+        // After OTP verification, redirect to Google OAuth
+        window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
       }
     } catch (error) {
       setMessage(error.response?.data?.msg || "Invalid or expired OTP");
@@ -49,19 +48,12 @@ const Login = () => {
     }
   };
 
-  
-  
-
-  const handleGoogleLogin = () => {
-    window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
-  };
-
   return (
     <div>
       {step === 1 && (
-        <form onSubmit={handleLogin}>
+        <div>
           <h2 className="text-xl font-bold text-green-500 mb-3">Login</h2>
-          <br></br>
+          <p className="text-lg">To continue with Google, please verify your email first.</p>
           <input
             className="py-3 px-3 my-2 rounded-lg"
             type="email"
@@ -70,33 +62,15 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <br></br>
-          <input
-            className="py-3 px-3 my-2 rounded-lg"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <br></br>
-          <button
-            className="rounded-full bg-red-600 py-2 px-2 text-white my-2"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-          
-        </form>
-      )}
-      <p className=" text-lg">or</p>
           <button
             className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
-            onClick={handleGoogleLogin}
+            onClick={handleGoogleInitiateOtp}
+            disabled={loading}
           >
-            Login with Google
+            {loading ? "Sending OTP..." : "Verify Email"}
           </button>
+        </div>
+      )}
       {step === 2 && (
         <form onSubmit={handleVerifyOtp}>
           <h2 className="text-xl font-bold text-green-400 mb-3">Enter OTP</h2>
@@ -108,7 +82,6 @@ const Login = () => {
             onChange={(e) => setOtp(e.target.value)}
             required
           />
-          <br></br>
           <button
             className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
             type="submit"
@@ -118,7 +91,7 @@ const Login = () => {
           </button>
         </form>
       )}
-      {message && <p className=" text-gray-900">{message}!</p>}
+      {message && <p className="text-gray-900">{message}!</p>}
     </div>
   );
 };
