@@ -17,7 +17,7 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "https://mern-auth-otp-server.vercel.app/api/auth/login",
+        "/api/auth/login",
         { email, password }
       );
       setMessage(response.data.msg);
@@ -35,7 +35,7 @@ const Login = () => {
     setMessage("");
     try {
       const response = await axios.post(
-        "https://mern-auth-otp-server.vercel.app/api/auth/verify-login-otp",
+        "/api/auth/verify-login-otp",
         { email, otp }
       );
       setMessage(response.data.msg);
@@ -49,11 +49,14 @@ const Login = () => {
     }
   };
 
-  
-  
-
-  const handleGoogleLogin = () => {
-    window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await axios.post("/api/auth/google/initiate-otp", { email });
+      setMessage(response.data.msg);
+      navigate("/google-otp"); // Redirect to the OTP verification route for Google
+    } catch (error) {
+      setMessage(error.response?.data?.msg || "Failed to initiate Google login!");
+    }
   };
 
   return (
@@ -61,7 +64,7 @@ const Login = () => {
       {step === 1 && (
         <form onSubmit={handleLogin}>
           <h2 className="text-xl font-bold text-green-500 mb-3">Login</h2>
-          <br></br>
+          <br />
           <input
             className="py-3 px-3 my-2 rounded-lg"
             type="email"
@@ -70,7 +73,7 @@ const Login = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <br></br>
+          <br />
           <input
             className="py-3 px-3 my-2 rounded-lg"
             type="password"
@@ -79,7 +82,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <br></br>
+          <br />
           <button
             className="rounded-full bg-red-600 py-2 px-2 text-white my-2"
             type="submit"
@@ -87,16 +90,15 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          
         </form>
       )}
-      <p className=" text-lg">or</p>
-          <button
-            className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
-            onClick={handleGoogleLogin}
-          >
-            Login with Google
-          </button>
+      <p className="text-lg">or</p>
+      <button
+        className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
+        onClick={handleGoogleLogin}
+      >
+        Login with Google
+      </button>
       {step === 2 && (
         <form onSubmit={handleVerifyOtp}>
           <h2 className="text-xl font-bold text-green-400 mb-3">Enter OTP</h2>
@@ -108,7 +110,7 @@ const Login = () => {
             onChange={(e) => setOtp(e.target.value)}
             required
           />
-          <br></br>
+          <br />
           <button
             className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
             type="submit"
@@ -118,7 +120,7 @@ const Login = () => {
           </button>
         </form>
       )}
-      {message && <p className=" text-gray-900">{message}!</p>}
+      {message && <p className="text-gray-900">{message}</p>}
     </div>
   );
 };

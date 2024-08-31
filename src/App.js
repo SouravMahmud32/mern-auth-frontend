@@ -4,6 +4,7 @@ import Register from "./components/Register";
 import VerifyOtp from "./components/VerifyOtp";
 import Login from "./components/Login";
 import Home from "./components/Home";
+import GoogleOtpVerification from "./components/GoogleOtpVerification";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/google-otp" element={<GoogleOtpVerification />} /> {/* Route for Google OTP */}
         </Routes>
       </div>
     </Router>
