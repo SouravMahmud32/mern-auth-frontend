@@ -51,9 +51,16 @@ const Login = () => {
 
   
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://mern-auth-otp-server.vercel.app/api/auth/google";
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await axios.post("/api/auth/google/initiate-otp", { email });
+      setMessage(response.data.msg);
+      navigate("/google-otp"); // Redirect to the OTP verification route for Google
+    } catch (error) {
+      setMessage(error.response?.data?.msg || "Failed to initiate Google login!");
+    }
   };
+  
 
   return (
     <div>
