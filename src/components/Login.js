@@ -4,19 +4,38 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1); // Step 1: Login form, Step 2: OTP form
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleGoogleInitiateOtp = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setMessage("");
     try {
       const response = await axios.post(
-        "https://mern-auth-otp-server.vercel.app/api/auth/google/initiate-otp",
-        { email }
+        "https://mern-auth-otp-server.vercel.app/api/auth/login",
+        { email, password }
+      );
+      setMessage(response.data.msg);
+      setStep(2);
+    } catch (error) {
+      setMessage(error.response?.data?.msg || "Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setMessage("");
+    try {
+      // Send OTP initiation request for Google OAuth
+      const response = await axios.post(
+        "https://mern-auth-otp-server.vercel.app/api/auth/google/initiate-otp"
       );
       setMessage(response.data.msg);
       setStep(2); // Move to OTP verification step
@@ -34,7 +53,7 @@ const Login = () => {
     try {
       const response = await axios.post(
         "https://mern-auth-otp-server.vercel.app/api/auth/google/verify-otp",
-        { email, otp }
+        { otp }
       );
       setMessage(response.data.msg);
       if (response.status === 200) {
@@ -52,22 +71,39 @@ const Login = () => {
     <div>
       {step === 1 && (
         <div>
-          <h2 className="text-xl font-bold text-green-500 mb-3">Login</h2>
-          <p className="text-lg">To continue with Google, please verify your email first.</p>
-          <input
-            className="py-3 px-3 my-2 rounded-lg"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <form onSubmit={handleLogin}>
+            <h2 className="text-xl font-bold text-green-500 mb-3">Login</h2>
+            <input
+              className="py-3 px-3 my-2 rounded-lg"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className="py-3 px-3 my-2 rounded-lg"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              className="rounded-full bg-red-600 py-2 px-2 text-white my-2"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+          <p className=" text-lg">or</p>
           <button
             className="rounded-full bg-blue-400 py-2 px-2 text-white my-2"
-            onClick={handleGoogleInitiateOtp}
+            onClick={handleGoogleLogin}
             disabled={loading}
           >
-            {loading ? "Sending OTP..." : "Verify Email"}
+            {loading ? "Sending OTP..." : "Login with Google"}
           </button>
         </div>
       )}
@@ -91,7 +127,7 @@ const Login = () => {
           </button>
         </form>
       )}
-      {message && <p className="text-gray-900">{message}!</p>}
+      {message && <p className=" text-gray-900">{message}!</p>}
     </div>
   );
 };
