@@ -23,23 +23,29 @@ const VerifyOtp = () => {
 
   return (
     <div>
-      <h2>Verify OTP</h2>
+      <h2 className="text-xl font-bold text-green-400 mb-3">Verify OTP</h2>
       <form onSubmit={handleSubmit}>
         <input
+        className="py-3 px-3 my-2 rounded-lg"
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        <br></br>
+        <br></br>
         <input
+        className="py-3 px-3 my-2 rounded-lg"
           type="text"
           placeholder="OTP"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           required
         />
-        <button type="submit">Verify OTP</button>
+        <br></br>
+        <br></br>
+        <button className="rounded-full bg-blue-400 py-2 px-2 text-white my-2" type="submit">Verify OTP</button>
       </form>
       {message && <p>{message}</p>}
     </div>
