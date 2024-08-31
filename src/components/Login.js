@@ -53,7 +53,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const response = await axios.post("/api/auth/google", { email });
+      const response = await axios.post("/api/auth/google/initiate-otp", { email });
       setMessage(response.data.msg);
       navigate("/google-otp"); // Redirect to the OTP verification route for Google
     } catch (error) {
