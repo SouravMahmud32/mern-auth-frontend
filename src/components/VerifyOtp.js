@@ -10,7 +10,10 @@ const VerifyOtp = () => {
     e.preventDefault();
     try {
       const response = await verifyOtp({ email, otp });
-      setMessage('OTP verified successfully! Token: ' + response.data.token);
+      setMessage('OTP verified successfully!');
+      if (response.status === 200) {
+        navigate("/home"); 
+      }
     } catch (error) {
       setMessage(error.response.data.msg || 'An error occurred');
     }
